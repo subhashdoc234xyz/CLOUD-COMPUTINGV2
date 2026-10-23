@@ -1,0 +1,13 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+terraform.tfvars
+!terraform.tfvars.example
+*.pem
+*.key
+*.ppk
+*.pdf.tmp
+
