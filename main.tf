@@ -24,20 +24,24 @@ data "aws_ami" "amazon_linux_2023" {
 
 locals {
   availability_zone = data.aws_availability_zones.available.names[0]
+  common_tags = {
+    Project = "EWB-VPC-Peering"
+    Student = var.student_name
+  }
 }
 
 resource "aws_vpc" "a" {
   cidr_block           = "10.10.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags                 = { Name = "ewb-vpc-a" }
+  tags                 = merge(local.common_tags, { Name = "ewb-vpc-a" })
 }
 
 resource "aws_vpc" "b" {
   cidr_block           = "10.20.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags                 = { Name = "ewb-vpc-b" }
+  tags                 = merge(local.common_tags, { Name = "ewb-vpc-b" })
 }
 
 resource "aws_subnet" "a_public" {
@@ -45,7 +49,7 @@ resource "aws_subnet" "a_public" {
   cidr_block              = "10.10.1.0/24"
   availability_zone       = local.availability_zone
   map_public_ip_on_launch = false
-  tags                    = { Name = "ewb-a-public" }
+  tags                    = merge(local.common_tags, { Name = "ewb-a-public" })
 }
 
 resource "aws_subnet" "a_private" {
@@ -53,7 +57,7 @@ resource "aws_subnet" "a_private" {
   cidr_block              = "10.10.2.0/24"
   availability_zone       = local.availability_zone
   map_public_ip_on_launch = false
-  tags                    = { Name = "ewb-a-private" }
+  tags                    = merge(local.common_tags, { Name = "ewb-a-private" })
 }
 
 resource "aws_subnet" "b_private" {
@@ -61,17 +65,17 @@ resource "aws_subnet" "b_private" {
   cidr_block              = "10.20.1.0/24"
   availability_zone       = local.availability_zone
   map_public_ip_on_launch = false
-  tags                    = { Name = "ewb-b-private" }
+  tags                    = merge(local.common_tags, { Name = "ewb-b-private" })
 }
 
 resource "aws_internet_gateway" "a" {
   vpc_id = aws_vpc.a.id
-  tags   = { Name = "ewb-igw-a" }
+  tags   = merge(local.common_tags, { Name = "ewb-igw-a" })
 }
 
 resource "aws_route_table" "a_public" {
   vpc_id = aws_vpc.a.id
-  tags   = { Name = "ewb-rt-a-public" }
+  tags   = merge(local.common_tags, { Name = "ewb-rt-a-public" })
 }
 
 resource "aws_route" "a_public_internet" {
@@ -87,7 +91,7 @@ resource "aws_route_table_association" "a_public" {
 
 resource "aws_route_table" "a_private" {
   vpc_id = aws_vpc.a.id
-  tags   = { Name = "ewb-rt-a-private" }
+  tags   = merge(local.common_tags, { Name = "ewb-rt-a-private" })
 }
 
 resource "aws_route_table_association" "a_private" {
@@ -97,7 +101,7 @@ resource "aws_route_table_association" "a_private" {
 
 resource "aws_route_table" "b_private" {
   vpc_id = aws_vpc.b.id
-  tags   = { Name = "ewb-rt-b-private" }
+  tags   = merge(local.common_tags, { Name = "ewb-rt-b-private" })
 }
 
 resource "aws_route_table_association" "b_private" {
@@ -110,7 +114,7 @@ resource "aws_vpc_peering_connection" "a_b" {
   vpc_id      = aws_vpc.a.id
   peer_vpc_id = aws_vpc.b.id
   auto_accept = true
-  tags        = { Name = "ewb-a-b-peer" }
+  tags        = merge(local.common_tags, { Name = "ewb-a-b-peer" })
 }
 
 resource "aws_route" "a_public_to_b" {
@@ -154,7 +158,7 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "ewb-sg-bastion" }
+  tags = merge(local.common_tags, { Name = "ewb-sg-bastion" })
 }
 
 resource "aws_security_group" "app_a" {
@@ -185,7 +189,7 @@ resource "aws_security_group" "app_a" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "ewb-sg-app-a" }
+  tags = merge(local.common_tags, { Name = "ewb-sg-app-a" })
 }
 
 resource "aws_security_group" "app_b" {
@@ -216,7 +220,7 @@ resource "aws_security_group" "app_b" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = { Name = "ewb-sg-app-b" }
+  tags = merge(local.common_tags, { Name = "ewb-sg-app-b" })
 }
 
 resource "aws_instance" "bastion" {
@@ -239,7 +243,7 @@ resource "aws_instance" "bastion" {
     delete_on_termination = true
   }
 
-  tags = { Name = "ewb-bastion" }
+  tags = merge(local.common_tags, { Name = "ewb-bastion" })
 }
 
 resource "aws_instance" "app_a" {
@@ -261,7 +265,7 @@ resource "aws_instance" "app_a" {
     delete_on_termination = true
   }
 
-  tags = { Name = "ewb-app-a" }
+  tags = merge(local.common_tags, { Name = "ewb-app-a" })
 }
 
 resource "aws_instance" "app_b" {
@@ -283,6 +287,6 @@ resource "aws_instance" "app_b" {
     delete_on_termination = true
   }
 
-  tags = { Name = "ewb-app-b" }
+  tags = merge(local.common_tags, { Name = "ewb-app-b" })
 }
 

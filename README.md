@@ -12,6 +12,10 @@
 
 This repository implements the EWB Courses student VPC peering assignment as repeatable Terraform configuration. It provisions two non-overlapping VPCs, three subnets, a bastion host, two private test instances, security groups, route tables, and an optional VPC peering connection.
 
+## License
+
+The project source code and project-authored documentation are released under the [MIT License](LICENSE). The included EWB Courses workbook PDF is assignment reference material and is not relicensed by this repository; its original copyright and terms remain with its respective owner.
+
 > **Current account limitation:** Terraform initialization, formatting, and validation succeeded. The AWS account used for the lab currently has an organization policy that explicitly denies `ec2:DescribeAvailabilityZones` and `ec2:DescribeImages`, so Terraform cannot complete its plan. Use an AWS lab account that allows the required EC2/VPC actions, or ask its organization administrator to resolve the policy restriction. An IAM permission change inside the account cannot override an organization-level explicit deny.
 
 ## What you will build
