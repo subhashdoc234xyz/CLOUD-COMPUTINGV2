@@ -2,6 +2,16 @@
 
 Reproducible Terraform implementation of the attached EWB Courses student project. It creates two non-overlapping VPCs, three explicitly routed subnets, one internet-facing bastion, two private Amazon Linux 2023 workloads, and an active VPC peering connection.
 
+## Interactive project showcase
+
+The `web/` directory contains a responsive, static project showcase with an interactive simulation of the packet path before and after VPC peering. The animated traffic and packet counter are a browser simulation, not live AWS telemetry. The pipeline panel reflects the current status: Terraform initialization and validation passed, while the AWS plan is blocked by an organization policy denying required EC2 lookups.
+
+The showcase has no backend, API keys, or private configuration, so it does not need a `.env` file. The `.gitignore` excludes local environment files and Terraform-generated state and plan artifacts.
+
+### Publish the showcase on Render
+
+The repository includes a `render.yaml` Blueprint for a free Render Static Site. In Render, choose **New → Blueprint**, connect this GitHub repository, review the `vpc-peering-lab-showcase` static site, and deploy it. Render will provide a public `onrender.com` URL after the deploy succeeds. This URL hosts the project showcase; it does not host or deploy the AWS VPC infrastructure.
+
 ## Before deploying
 
 - Use an AWS lab account and Region where you are allowed to create VPC, EC2, security groups, key-pair references, and public IPv4 resources.

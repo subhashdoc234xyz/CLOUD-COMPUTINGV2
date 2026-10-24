@@ -1,13 +1,24 @@
 .terraform/
+node_modules/
+dist/
+build/
+.render/
 *.tfstate
 *.tfstate.*
 *.tfplan
+tfplan
+tfplan.*
 crash.log
 crash.*.log
 terraform.tfvars
 !terraform.tfvars.example
+.env
+.env.*
+!.env.example
 *.pem
 *.key
 *.ppk
 *.pdf.tmp
+.DS_Store
+Thumbs.db
 

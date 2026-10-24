@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101b21" />
+    <meta name="description" content="An interactive walkthrough of an AWS VPC peering lab built with Terraform." />
+    <title>VPC Peering Lab — Network Field Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="VPC Peering Lab home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>FIELDNOTES<span class="brand-divider">/</span><b>NETWORK LAB</b></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#overview">Overview</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#submission">Submission</a>
+      </nav>
+      <a class="nav-cta" href="https://github.com/subhashdoc234xyz/CLOUD-COMPUTINGV2" target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a>
+      <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span></button>
+    </header>
+
+    <main id="main">
+      <section class="hero page-shell" id="top">
+        <div class="hero-copy" id="overview">
+          <div class="eyebrow"><span class="eyebrow-dot"></span> AWS NETWORKING PROJECT <span class="eyebrow-slash">/</span> TERRAFORM</div>
+          <h1>Two networks.<br /><em>One connection.</em></h1>
+          <p class="hero-lede">A visual walkthrough of building isolated AWS VPCs, testing the boundary, then connecting them with peering routes.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#architecture">Explore the system <span aria-hidden="true">↓</span></a>
+            <a class="button button-quiet" href="https://github.com/subhashdoc234xyz/CLOUD-COMPUTINGV2" target="_blank" rel="noreferrer">Open source files <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-meta"><span class="status-pill"><i></i> INTERACTIVE SIMULATION</span><span class="meta-separator">•</span><span>Terraform + AWS VPC</span></div>
+        </div>
+
+        <div class="hero-visual" aria-label="Illustration of two AWS virtual networks linked by a peering connection">
+          <div class="visual-topline"><span>NETWORK TOPOLOGY</span><span class="mono">LAB 01&nbsp; / &nbsp;AP-SOUTHEAST-2</span></div>
+          <div class="topology">
+            <div class="vpc-card vpc-a">
+              <div class="vpc-heading"><span class="vpc-index">A</span><div><strong>VPC A</strong><small>10.10.0.0/16</small></div><span class="vpc-dot"></span></div>
+              <div class="subnet public-subnet"><span class="subnet-label">PUBLIC SUBNET</span><div class="node-row"><span class="node-icon bastion-icon">↗</span><span><b>Bastion</b><small>10.10.1.10 · public</small></span></div></div>
+              <div class="subnet"><span class="subnet-label">PRIVATE SUBNET</span><div class="node-row"><span class="node-icon">A</span><span><b>App A</b><small>10.10.2.10 · private</small></span></div></div>
+            </div>
+            <div class="peer-link" id="heroPeerLink"><span class="peer-label">VPC PEERING</span><span class="peer-line"><i class="peer-packet"></i></span><span class="peer-state" id="heroPeerState">ROUTES OFF</span></div>
+            <div class="vpc-card vpc-b">
+              <div class="vpc-heading"><span class="vpc-index">B</span><div><strong>VPC B</strong><small>10.20.0.0/16</small></div><span class="vpc-dot"></span></div>
+              <div class="subnet private-b"><span class="subnet-label">PRIVATE SUBNET</span><div class="node-row"><span class="node-icon">B</span><span><b>App B</b><small>10.20.1.10 · private</small></span></div></div>
+              <div class="vpc-note"><span class="note-rule"></span><span>No public route<br />by design</span></div>
+            </div>
+          </div>
+          <div class="visual-footer"><span><i class="legend-dot legend-private"></i> PRIVATE WORKLOAD</span><span><i class="legend-dot legend-public"></i> ADMIN ACCESS</span><span class="mono">CIDR BLOCKS DO NOT OVERLAP</span></div>
+        </div>
+      </section>
+
+      <section class="section page-shell" id="architecture">
+        <div class="section-heading">
+          <div><div class="eyebrow">01 <span class="eyebrow-slash">/</span> THE NETWORK</div><h2>See the route.<br /><em>Feel the difference.</em></h2></div>
+          <p class="section-intro">Peering creates a private path between VPCs. The workloads keep their private addresses; route tables decide whether packets can cross.</p>
+        </div>
+        <div class="sim-panel" id="simulationPanel">
+          <div class="sim-header">
+            <div><span class="small-label">PACKET FLOW LAB</span><h3>Try both network states</h3></div>
+            <div class="mode-switch" role="group" aria-label="Choose network simulation state">
+              <button type="button" class="mode-button is-active" id="baselineButton" aria-pressed="true" data-mode="baseline">Baseline</button>
+              <button type="button" class="mode-button" id="peeringButton" aria-pressed="false" data-mode="peering">Peering enabled</button>
+            </div>
+          </div>
+          <div class="sim-canvas" id="simCanvas" data-mode="baseline">
+            <div class="sim-endpoint endpoint-a"><span class="endpoint-kicker">SOURCE WORKLOAD</span><strong>App A</strong><code>10.10.2.10</code><span class="endpoint-vpc">VPC A</span></div>
+            <div class="sim-journey">
+              <div class="journey-labels"><span>ROUTE TABLE A</span><span>ROUTE TABLE B</span></div>
+              <div class="journey-track"><span class="track-line"></span><span class="packet packet-one"></span><span class="packet packet-two"></span><span class="packet packet-three"></span><span class="route-gate"><i></i></span></div>
+              <div class="journey-status" aria-live="polite"><span class="state-icon" id="stateIcon">×</span><span id="journeyMessage">No peering route — packets stop at VPC A.</span></div>
+            </div>
+            <div class="sim-endpoint endpoint-b"><span class="endpoint-kicker">DESTINATION WORKLOAD</span><strong>App B</strong><code>10.20.1.10</code><span class="endpoint-vpc">VPC B</span></div>
+          </div>
+          <div class="sim-bottom"><div class="sim-note"><span class="note-symbol">i</span><span><b>Demo simulation</b> — animated packets illustrate the route. This page does not connect to AWS telemetry.</span></div><div class="packet-counter"><span class="counter-live"></span><span class="small-label">DEMO PACKETS</span><strong id="packetCount" aria-live="polite">000</strong></div></div>
+        </div>
+      </section>
+
+      <section class="section pipeline-section page-shell" id="pipeline">
+        <div class="section-heading pipeline-heading">
+          <div><div class="eyebrow">02 <span class="eyebrow-slash">/</span> THE PIPELINE</div><h2>From code<br /><em>to connectivity.</em></h2></div>
+          <p class="section-intro">Terraform turns the network design into repeatable infrastructure. Each stage makes the next one easier to inspect and recover.</p>
+        </div>
+        <div class="pipeline-grid">
+          <article class="pipeline-step step-done"><span class="step-index">01</span><span class="step-icon">⌘</span><div class="step-status">SOURCE <i></i></div><h3>Commit</h3><p>Terraform files and project notes live in GitHub.</p><span class="step-output">VERSIONED CODE</span></article>
+          <article class="pipeline-step step-done"><span class="step-index">02</span><span class="step-icon">✓</span><div class="step-status">PASSED <i></i></div><h3>Validate</h3><p>Initialize the provider, format the files, and check configuration syntax.</p><span class="step-output">INIT · FMT · VALIDATE</span></article>
+          <article class="pipeline-step step-blocked"><span class="step-index">03</span><span class="step-icon">!</span><div class="step-status">BLOCKED <i></i></div><h3>Plan</h3><p>Preview intended changes. Current AWS account policy denies required EC2 lookups.</p><span class="step-output">ORG POLICY DENY</span></article>
+          <article class="pipeline-step step-pending"><span class="step-index">04</span><span class="step-icon">↗</span><div class="step-status">NEXT <i></i></div><h3>Apply</h3><p>Create the VPCs, subnets, routes, security groups, and instances.</p><span class="step-output">AWS RESOURCES</span></article>
+          <article class="pipeline-step step-pending"><span class="step-index">05</span><span class="step-icon">⇄</span><div class="step-status">NEXT <i></i></div><h3>Verify</h3><p>Capture the baseline, add peering routes, then test private connectivity.</p><span class="step-output">PING · EVIDENCE</span></article>
+        </div>
+        <div class="pipeline-controls"><button class="walkthrough-button" id="walkthroughButton" type="button"><span aria-hidden="true">▶</span> Play pipeline walkthrough</button><span id="walkthroughStatus" aria-live="polite">Illustrative walkthrough · stops at the current AWS policy block</span></div>
+        <div class="policy-callout"><span class="callout-icon">!</span><div><strong>Live AWS deployment is currently blocked</strong><p>The account’s organization policy explicitly denies <code>ec2:DescribeAvailabilityZones</code> and <code>ec2:DescribeImages</code>. The AWS organization administrator must provide an allowed lab account or change the policy before Terraform can continue.</p></div><span class="callout-tag">ACTION REQUIRED</span></div>
+      </section>
+
+      <section class="section facts-section page-shell" id="submission">
+        <div class="facts-title"><div class="eyebrow">03 <span class="eyebrow-slash">/</span> PROJECT NOTES</div><h2>Built to be<br /><em>easy to review.</em></h2></div>
+        <div class="facts-grid">
+          <div class="fact"><span class="fact-value">02</span><span class="fact-label">ISOLATED VPCS</span><p>Separate address spaces with no overlap.</p></div>
+          <div class="fact"><span class="fact-value">03</span><span class="fact-label">SUBNETS</span><p>One public admin subnet, two private workload subnets.</p></div>
+          <div class="fact"><span class="fact-value">03</span><span class="fact-label">EC2 INSTANCES</span><p>A bastion plus one private test host per VPC.</p></div>
+          <div class="fact"><span class="fact-value fact-value-text">Terraform</span><span class="fact-label">INFRASTRUCTURE AS CODE</span><p>Repeatable build with a baseline and a peering phase.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer page-shell">
+      <div class="footer-brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>FIELDNOTES<span class="brand-divider">/</span><b>NETWORK LAB</b></span></div>
+      <p>Student project showcase · Interactive network simulation</p>
+      <a href="https://github.com/subhashdoc234xyz/CLOUD-COMPUTINGV2" target="_blank" rel="noreferrer">GitHub repository <span aria-hidden="true">↗</span></a>
+    </footer>
+    <div class="footer-legal page-shell"><span>SIMULATION ONLY · NOT LIVE AWS TELEMETRY</span><span>© 2026 · VPC PEERING LAB</span></div>
+  </body>
+</html>
